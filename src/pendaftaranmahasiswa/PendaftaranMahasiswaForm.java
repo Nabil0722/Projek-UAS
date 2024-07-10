@@ -15,7 +15,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 /**
  *
- * @author fian
+ * @author fian, akbar, nabil
  */
 public class PendaftaranMahasiswaForm extends javax.swing.JFrame {
 
@@ -275,4 +275,51 @@ public class PendaftaranMahasiswaForm extends javax.swing.JFrame {
     private javax.swing.JTable mahasiswaTable;
     private javax.swing.JTextField namaField;
     // End of variables declaration//GEN-END:variables
+
+ private void fillJurusanComboBox() {
+    try (Connection conn = DatabaseConnection.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT nama_jurusan FROM jurusan")) {
+
+        jurusanField.removeAllItems(); // Menghapus item sebelumnya
+
+        while (rs.next()) {
+            jurusanField.addItem(rs.getString("nama_jurusan"));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error loading jurusan data: " + e.getMessage());
+    }
+}
+
+
+private void loadMahasiswaData() {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/mahasiswa_db", "root", "");
+            Statement statement = connection.createStatement();
+            String query = "SELECT m.id, m.nama, m.alamat, j.nama_jurusan " +
+                           "FROM mahasiswa m " +
+                           "JOIN pendaftaran p ON m.id = p.mahasiswa_id " +
+                           "JOIN jurusan j ON p.jurusan_id = j.id";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            DefaultTableModel model = new DefaultTableModel(
+                new String[]{"ID", "Nama", "Alamat", "Jurusan"}, 0);
+            while (resultSet.next()) {
+                model.addRow(new Object[]{
+                    resultSet.getInt("id"),
+                    resultSet.getString("nama"),
+                    resultSet.getString("alamat"),
+                    resultSet.getString("nama_jurusan")
+                });
+            }
+            mahasiswaTable.setModel(model);
+
+            connection.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal memuat data mahasiswa: " + e.getMessage());
+        }
+    }
+
+}
 
