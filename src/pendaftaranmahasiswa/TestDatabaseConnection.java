@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 /**
  *
- * @author akmal
+ * 
  */
 public class TestDatabaseConnection {
     public static void main(String[] args) {
